@@ -1,0 +1,3 @@
+[submodule "packages/mecab/native/mecab"]
+	path = packages/mecab/native/mecab
+	url = https://github.com/taku910/mecab.git

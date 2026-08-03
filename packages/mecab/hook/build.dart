@@ -37,6 +37,7 @@ void main(List<String> args) async {
       ],
       defines: {'HAVE_CONFIG_H': null},
       flags: ['-std=c++11', '-w'],
+      libraries: ['advapi32'],
       language: Language.cpp,
     ).run(input: input, output: output);
   });

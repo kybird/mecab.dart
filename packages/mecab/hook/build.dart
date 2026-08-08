@@ -1,10 +1,18 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 import 'package:native_toolchain_c/native_toolchain_c.dart';
 
 void main(List<String> args) async {
   await build(args, (input, output) async {
+    // advapi32 (Windows Registry API) is only needed on Windows — the native
+    // source uses RegOpenKeyExW/RegCloseKey inside `#if _WIN32` guards.
+    // Linking it unconditionally breaks Android (and other non-Windows)
+    // builds: `ld.lld: error: unable to find library -ladvapi32`.
+    final libraries = input.config.code.targetOS == OS.windows
+        ? ['advapi32']
+        : <String>[];
     await CBuilder.library(
       name: 'mecab_native',
       assetName: 'src/mecab.dart',
@@ -37,7 +45,7 @@ void main(List<String> args) async {
       ],
       defines: {'HAVE_CONFIG_H': null},
       flags: ['-std=c++11', '-w'],
-      libraries: ['advapi32'],
+      libraries: libraries,
       language: Language.cpp,
     ).run(input: input, output: output);
   });

@@ -6,6 +6,10 @@ import 'package:native_toolchain_c/native_toolchain_c.dart';
 
 void main(List<String> args) async {
   await build(args, (input, output) async {
+    // Host build(및 code assets 비활성 빌드)에서는 no-op.
+    // Flutter 3.44+가 host build input에 code_assets extension을 주지 않아
+    // input.config.code 가 null → CodeConfig._fromJson null check 실패.
+    if (!input.config.buildCodeAssets) return;
     // advapi32 (Windows Registry API) is only needed on Windows — the native
     // source uses RegOpenKeyExW/RegCloseKey inside `#if _WIN32` guards.
     // Linking it unconditionally breaks Android (and other non-Windows)
